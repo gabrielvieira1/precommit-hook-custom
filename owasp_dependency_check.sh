@@ -1,13 +1,48 @@
 #!/bin/bash
 
-# Caminho para instalação local
-DC_PATH="/home/gabriel/dependency-check/bin/dependency-check.sh"
+# Função para encontrar o executável do Dependency-Check
+find_dependency_check() {
+    local paths=(
+        "/usr/local/bin/dependency-check"
+        "/usr/bin/dependency-check"
+        "/opt/dependency-check/bin/dependency-check.sh"
+        "$HOME/dependency-check/bin/dependency-check.sh"
+    )
 
-# Verificar se a instalação local existe
-if [ ! -f "$DC_PATH" ]; then
-    echo "❌ Dependency-Check não encontrado em: $DC_PATH"
+    # Primeiro tentar encontrar via which
+    if command -v dependency-check &> /dev/null; then
+        echo "dependency-check"
+        return 0
+    fi
+
+    # Procurar nos caminhos comuns
+    for path in "${paths[@]}"; do
+        if [ -f "$path" ] && [ -x "$path" ]; then
+            echo "$path"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Encontrar o executável do Dependency-Check
+DC_PATH=$(find_dependency_check)
+
+# Verificar se encontrou o executável
+if [ -z "$DC_PATH" ]; then
+    echo "❌ OWASP Dependency-Check não encontrado!"
+    echo "   Verifique se está instalado em um dos seguintes locais:"
+    echo "   - /usr/local/bin/dependency-check"
+    echo "   - /usr/bin/dependency-check"
+    echo "   - /opt/dependency-check/bin/dependency-check.sh"
+    echo "   - ~/dependency-check/bin/dependency-check.sh"
+    echo "   - /home/\$USER/dependency-check/bin/dependency-check.sh"
+    echo "   Ou certifique-se de que está no PATH do sistema"
     exit 1
 fi
+
+echo "✅ Dependency-Check encontrado em: $DC_PATH"
 
 # Criar diretórios necessários
 mkdir -p reports logs
