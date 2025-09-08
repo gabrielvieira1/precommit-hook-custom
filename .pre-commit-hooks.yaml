@@ -11,3 +11,10 @@
   language: script
   description: Multi-language dependency vulnerability scanning with Snyk via Docker
   pass_filenames: false
+
+- id: owasp-dependency-check
+  name: OWASP Dependency-Check
+  entry: ./owasp_dependency_check.sh
+  language: script
+  description: Analyze Java dependencies using local OWASP Dependency-Check installation
+  pass_filenames: false
