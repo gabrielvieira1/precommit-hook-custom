@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo '🛡️  Executando Snyk Security Scan via Docker...' && mkdir -p logs && if [ -f .env ]; then export $(grep -v '^#' .env | xargs); fi; if [ -n \"$SNYK_TOKEN\" ]; then docker run --rm -e SNYK_TOKEN=\"$SNYK_TOKEN\" -v $(pwd):/project -w /project snyk/snyk:node snyk test --severity-threshold=high --json > logs/snyk.log 2>&1; EXIT_CODE=$?; else echo '⚠️  SNYK_TOKEN não encontrado. Configure seu token em .env'; echo 'Executando sem autenticação (funcionalidade limitada)...'; docker run --rm -v $(pwd):/project -w /project snyk/snyk:node snyk test --severity-threshold=high --json > logs/snyk.log 2>&1; EXIT_CODE=$?; fi; echo '📋 Resultados salvos em logs/snyk.log'; exit $EXIT_CODE

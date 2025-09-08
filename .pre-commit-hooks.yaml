@@ -4,4 +4,10 @@
   language: script
   description: Exibe uma mensagem de teste personalizada
   pass_filenames: false
-  
+
+- id: secure-dependencies
+  name: Snyk Security Scan
+  entry: ./secure_dependencies.sh
+  language: script
+  description: Multi-language dependency vulnerability scanning with Snyk via Docker
+  pass_filenames: false
