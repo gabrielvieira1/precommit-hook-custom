@@ -1,0 +1,5 @@
+- id: hello-custom-hook
+  name: Hello Custom Hook
+  entry: ./hello_custom_hook.sh
+  language: script
+  description: Exibe uma mensagem de teste personalizada
