@@ -1,0 +1,1 @@
+# precommit-hook-custom
