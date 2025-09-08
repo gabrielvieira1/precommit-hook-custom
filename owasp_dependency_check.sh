@@ -12,12 +12,15 @@ fi
 # Criar diretórios necessários
 mkdir -p reports logs
 
+# Obter nome do projeto da pasta atual
+PROJECT_NAME=$(basename $(pwd))
+
 # Executar dependency-check local com base já baixada
 $DC_PATH \
     --scan . \
     --format JSON \
     --format HTML \
-    --project "vollmed-java-precommit-scan" \
+    --project "$PROJECT_NAME" \
     --out ./reports \
     --noupdate \
     > logs/dependency-check.log 2>&1
