@@ -3,3 +3,5 @@
   entry: ./hello_custom_hook.sh
   language: script
   description: Exibe uma mensagem de teste personalizada
+  pass_filenames: false
+  
