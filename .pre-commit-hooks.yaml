@@ -1,10 +1,3 @@
-- id: hello-custom-hook
-  name: Hello Custom Hook
-  entry: ./hello_custom_hook.sh
-  language: script
-  description: Exibe uma mensagem de teste personalizada
-  pass_filenames: false
-
 - id: secure-dependencies
   name: Snyk Security Scan
   entry: ./secure_dependencies.sh
@@ -17,4 +10,11 @@
   entry: ./owasp_dependency_check.sh
   language: script
   description: Analyze Java dependencies using local OWASP Dependency-Check installation
+  pass_filenames: false
+
+- id: gitleaks-local
+  name: GitLeaks Secrets Scanner
+  entry: ./gitleaks.sh
+  language: script
+  description: Detect hardcoded secrets like passwords, api keys, and tokens in git repos
   pass_filenames: false
