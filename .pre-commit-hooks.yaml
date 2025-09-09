@@ -18,3 +18,10 @@
   language: script
   description: Detect hardcoded secrets like passwords, api keys, and tokens in git repos
   pass_filenames: false
+
+- id: semgrep-sast
+  name: Semgrep SAST Scanner
+  entry: ./semgrep.sh
+  language: script
+  description: Static analysis security testing with Semgrep
+  pass_filenames: false
