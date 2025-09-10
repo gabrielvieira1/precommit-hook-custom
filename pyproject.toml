@@ -7,3 +7,6 @@ name = "precommit-hook-custom"
 version = "0.1.0"
 description = "Custom pre-commit hooks"
 dependencies = []
+
+[project.scripts]
+vulnerability_summary_ai = "vulnerability_summary_ai:main"
