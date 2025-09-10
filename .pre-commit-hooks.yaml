@@ -54,3 +54,10 @@
   language: script
   description: Gera SBOM (Software Bill of Materials) e análise de dependências com Syft via Docker
   pass_filenames: false
+
+- id: grype-vulnerability-scan
+  name: Grype Vulnerability Scanner
+  entry: ./grype_scan.sh
+  language: script
+  description: Detecta vulnerabilidades usando Grype via Docker (preferencialmente usando SBOM do Syft)
+  pass_filenames: false
