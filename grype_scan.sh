@@ -21,8 +21,8 @@ echo "🔎 Executando análise de vulnerabilidades para: $PROJECT_NAME"
 docker run --rm -v "$(pwd):/project" -w /project anchore/grype:latest $SCAN_TARGET -o table > logs/grype.log 2>&1
 EXIT_CODE_LOG=$?
 
-# Gerar também relatório em JSON para análise posterior
-docker run --rm -v "$(pwd):/project" -w /project anchore/grype:latest $SCAN_TARGET -o json > reports/grype-vulnerabilities.json 2>&1
+# Gerar também relatório em JSON para análise posterior (separando stderr do JSON)
+docker run --rm -v "$(pwd):/project" -w /project anchore/grype:latest $SCAN_TARGET -o json 2>logs/grype-json.stderr >reports/grype-vulnerabilities.json
 EXIT_CODE_JSON=$?
 
 # Usar o maior exit code (se algum falhar)

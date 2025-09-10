@@ -15,8 +15,8 @@ echo "📦 Gerando SBOM (Software Bill of Materials) para o projeto: $PROJECT_NA
 docker run --rm -v "$(pwd):/project" -w /project anchore/syft:latest /project -o table > logs/syft.log 2>&1
 EXIT_CODE_LOG=$?
 
-# Gerar também relatório em JSON para análise posterior
-docker run --rm -v "$(pwd):/project" -w /project anchore/syft:latest /project -o json > reports/syft-sbom.json 2>&1
+# Gerar também relatório em JSON para análise posterior (separando stderr do JSON)
+docker run --rm -v "$(pwd):/project" -w /project anchore/syft:latest /project -o json 2>logs/syft-json.stderr >reports/syft-sbom.json
 EXIT_CODE_JSON=$?
 
 # Usar o maior exit code (se algum falhar)
