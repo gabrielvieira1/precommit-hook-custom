@@ -51,24 +51,33 @@ mkdir -p reports logs
 PROJECT_NAME=$(basename $(pwd))
 
 # Executar dependency-check local com base já baixada
+# Primeiro gerar JSON na pasta logs
 $DC_PATH \
     --scan . \
     --format JSON \
+    --project "$PROJECT_NAME" \
+    --out ./logs \
+    --noupdate \
+    > logs/dependency-check.log 2>&1
+
+# Depois gerar HTML na pasta reports
+$DC_PATH \
+    --scan . \
     --format HTML \
     --project "$PROJECT_NAME" \
     --out ./reports \
     --noupdate \
-    > logs/dependency-check.log 2>&1
+    >> logs/dependency-check.log 2>&1
 
 EXIT_CODE=$?
 
 # Verificar se há vulnerabilidades críticas ou altas
-if [ $EXIT_CODE -eq 0 ] && [ -f reports/dependency-check-report.json ]; then
+if [ $EXIT_CODE -eq 0 ] && [ -f logs/dependency-check-report.json ]; then
     if command -v jq &> /dev/null; then
         # Contar vulnerabilidades por severidade
-        CRITICAL=$(jq "[.dependencies[]? | select(.vulnerabilities?) | .vulnerabilities[] | select(.severity? == \"CRITICAL\")] | length" reports/dependency-check-report.json 2>/dev/null || echo "0")
-        HIGH=$(jq "[.dependencies[]? | select(.vulnerabilities?) | .vulnerabilities[] | select(.severity? == \"HIGH\")] | length" reports/dependency-check-report.json 2>/dev/null || echo "0")
-        MEDIUM=$(jq "[.dependencies[]? | select(.vulnerabilities?) | .vulnerabilities[] | select(.severity? == \"MEDIUM\")] | length" reports/dependency-check-report.json 2>/dev/null || echo "0")
+        CRITICAL=$(jq "[.dependencies[]? | select(.vulnerabilities?) | .vulnerabilities[] | select(.severity? == \"CRITICAL\")] | length" logs/dependency-check-report.json 2>/dev/null || echo "0")
+        HIGH=$(jq "[.dependencies[]? | select(.vulnerabilities?) | .vulnerabilities[] | select(.severity? == \"HIGH\")] | length" logs/dependency-check-report.json 2>/dev/null || echo "0")
+        MEDIUM=$(jq "[.dependencies[]? | select(.vulnerabilities?) | .vulnerabilities[] | select(.severity? == \"MEDIUM\")] | length" logs/dependency-check-report.json 2>/dev/null || echo "0")
 
         echo "📊 Vulnerabilidades encontradas:"
         echo "   - CRITICAL: $CRITICAL"
@@ -89,6 +98,7 @@ if [ $EXIT_CODE -eq 0 ] && [ -f reports/dependency-check-report.json ]; then
 fi
 
 echo "📋 Log completo: logs/dependency-check.log"
+echo "📄 Relatório JSON: logs/dependency-check-report.json"
 echo "📄 Relatório HTML: reports/dependency-check-report.html"
 
 exit $EXIT_CODE
