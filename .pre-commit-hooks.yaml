@@ -47,3 +47,10 @@
   language: script
   description: Security linter for Python code
   pass_filenames: false
+
+- id: syft-sbom-scan
+  name: Syft SBOM Scanner
+  entry: ./syft_scan.sh
+  language: script
+  description: Gera SBOM (Software Bill of Materials) e análise de dependências com Syft via Docker
+  pass_filenames: false
