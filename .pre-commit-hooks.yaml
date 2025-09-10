@@ -35,7 +35,7 @@
 
 - id: vulnerability-summary-ai
   name: Generate AI Vulnerability Summary
-  entry: ./vulnerability_summary_ai.py
+  entry: vulnerability_summary_ai.py
   language: python
   description: Generates a Markdown summary of security scan results using the Gemini API.
   pass_filenames: false
