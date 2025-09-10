@@ -40,3 +40,10 @@
   description: Generates a Markdown summary of security scan results using the Gemini API.
   pass_filenames: false
   additional_dependencies: [google-generativeai, python-dotenv]
+
+- id: bandit-python-sast
+  name: Bandit Python Security Scanner
+  entry: ./bandit_python_sast.sh
+  language: script
+  description: Security linter for Python code
+  pass_filenames: false
