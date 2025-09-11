@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔍 Executando Grype Vulnerability Scanner via Docker..."
+echo "🔍 Executando Grype Vulnerability Scanner..."
 mkdir -p logs reports
 
 # Verificar se existe SBOM do Syft para usar
@@ -9,24 +9,55 @@ if [ -f "reports/syft-sbom.json" ]; then
     SCAN_TARGET="sbom:reports/syft-sbom.json"
 else
     echo "📦 SBOM não encontrado, escaneando diretório atual"
-    SCAN_TARGET="/project"
+    SCAN_TARGET="."
 fi
 
-# Obter nome do projeto da pasta atual
-PROJECT_NAME=$(basename $(pwd))
-
-echo "🔎 Executando análise de vulnerabilidades para: $PROJECT_NAME"
-
-# Executar Grype via Docker - gera tanto log quanto relatório JSON
-docker run --rm -v "$(pwd):/project" -w /project anchore/grype:latest $SCAN_TARGET -o table > logs/grype.log 2>&1
-EXIT_CODE_LOG=$?
-
-# Gerar também relatório em JSON para análise posterior (separando stderr do JSON)
-docker run --rm -v "$(pwd):/project" -w /project anchore/grype:latest $SCAN_TARGET -o json 2>logs/grype-json.stderr >reports/grype-vulnerabilities.json
-EXIT_CODE_JSON=$?
-
-# Usar o maior exit code (se algum falhar)
-EXIT_CODE=$([[ $EXIT_CODE_LOG -gt $EXIT_CODE_JSON ]] && echo $EXIT_CODE_LOG || echo $EXIT_CODE_JSON)
+# Verificar se Grype está instalado localmente
+if command -v grype &> /dev/null; then
+    echo "✅ Usando Grype local (mais rápido e confiável)"
+    
+    # Obter nome do projeto da pasta atual
+    PROJECT_NAME=$(basename $(pwd))
+    
+    echo "🔎 Executando análise de vulnerabilidades para: $PROJECT_NAME"
+    
+    # Executar Grype localmente - gera tanto log quanto relatório JSON
+    grype $SCAN_TARGET -o table > logs/grype.log 2>&1
+    EXIT_CODE_LOG=$?
+    
+    # Gerar também relatório em JSON para análise posterior
+    grype $SCAN_TARGET -o json > reports/grype-vulnerabilities.json 2>logs/grype-json.stderr
+    EXIT_CODE_JSON=$?
+    
+    # Usar o maior exit code (se algum falhar)
+    EXIT_CODE=$([[ $EXIT_CODE_LOG -gt $EXIT_CODE_JSON ]] && echo $EXIT_CODE_LOG || echo $EXIT_CODE_JSON)
+    
+else
+    echo "⚠️  Grype não encontrado localmente, tentando Docker..."
+    
+    # Obter nome do projeto da pasta atual
+    PROJECT_NAME=$(basename $(pwd))
+    
+    echo "🔎 Executando análise de vulnerabilidades para: $PROJECT_NAME"
+    
+    # Ajustar target para Docker
+    if [ "$SCAN_TARGET" = "." ]; then
+        DOCKER_TARGET="/project"
+    else
+        DOCKER_TARGET="$SCAN_TARGET"
+    fi
+    
+    # Executar Grype via Docker - gera tanto log quanto relatório JSON
+    docker run --rm -v "$(pwd):/project" -w /project anchore/grype:latest $DOCKER_TARGET -o table > logs/grype.log 2>&1
+    EXIT_CODE_LOG=$?
+    
+    # Gerar também relatório em JSON para análise posterior (separando stderr do JSON)
+    docker run --rm -v "$(pwd):/project" -w /project anchore/grype:latest $DOCKER_TARGET -o json 2>logs/grype-json.stderr >reports/grype-vulnerabilities.json
+    EXIT_CODE_JSON=$?
+    
+    # Usar o maior exit code (se algum falhar)
+    EXIT_CODE=$([[ $EXIT_CODE_LOG -gt $EXIT_CODE_JSON ]] && echo $EXIT_CODE_LOG || echo $EXIT_CODE_JSON)
+fi
 
 echo "📋 Resultados salvos em:"
 echo "   - logs/grype.log (formato legível)"
