@@ -1,4 +1,4 @@
-- id: secure-dependencies
+- id: snyk-secure-dependencies
   name: Snyk Security Scan
   entry: ./secure_dependencies.sh
   language: script
@@ -12,7 +12,7 @@
   description: Analyze Java dependencies using local OWASP Dependency-Check installation
   pass_filenames: false
 
-- id: gitleaks-local
+- id: gitleaks
   name: GitLeaks Secrets Scanner
   entry: ./gitleaks.sh
   language: script
